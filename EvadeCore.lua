@@ -2,8 +2,8 @@
 --[[
 
     Author: Ark223
-    Version: 1.0.1b
-    Date: 1 December 2021
+    Version: 1.0.2
+    Date: 2 December 2021
     Copyright (c) 2021 Arkadiusz Kwiatkowski
 
     [License]
@@ -386,7 +386,7 @@ function Vector:AngleBetween(p1, p2, fix)
     local angle = atan2(p2.y - self.y, p2.x - self.x)
         - atan2(p1.y - self.y, p1.x - self.x)
     if angle < 0 then angle = angle + math.pi * 2 end
-    return fix and angle > math.pi and math.pi - angle or angle
+    return fix and angle > math.pi and angle - math.pi or angle
 end
 
 function Vector:Append(v, dist)
@@ -548,7 +548,6 @@ end
 
 function Geometry:DrawLine(p1, p2, color, height)
     local a, r, g, b = Hex2Argb(color)
-    local height = height or myHero.origin.y
     directives.drawLine(p1, p2, height, a, r, g, b)
 end
 
@@ -831,9 +830,9 @@ function Skillshot:IsPathDangerousStatic(path)
     if self:IsDangerous(path.endPos) then return true end
     local timeToHit = self:TimeToHitStatic()
     local delay, pos = timeToHit - path.delay, {}
-    if delay <= 0 and (self:IsDangerous(path.startPos)
-        or #self:PathIntersection(path.startPos,
-        path.endPos) > 0) then return true end
+    if delay <= 0 then return self:IsDangerous(
+        path.startPos) or #self:PathIntersection(
+        path.startPos, path.endPos) > 0 end
     if path.speed == math.huge then return false end
     for i = -1, path.delta > 0 and 1 or 0, 2 do
         local index = i == -1 and 1 or 2

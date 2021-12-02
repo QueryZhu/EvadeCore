@@ -60,11 +60,11 @@ Methods:
 
 * **Draw(number color1, number color2)** [void] - draws a skillshot hitbox area
 * **FixOrigin()** [void] - executes a fix for skillshot origin placements
-* **LoadData(table)** [void] - overrides skillshot parameters with input table values
 * **IsDangerous(Vector)** [boolean] - indicates if input point is inside of skillshot area
 * **IsDangerousPath(Path)** [boolean] - indicates if input path will collide with a skillshot
 * **IsExpired()** [boolean] - indicates if a skillshot has already expired
 * **IsSafe(Vector)** [boolean] - indicates if input point is outside of skillshot area
+* **LoadData(table)** [void] - overrides skillshot parameters with input table values
 * **PathIntersection(Vector, Vector)** [Linq(Vector)] - returns skillshot-path intersection points
 * **Position(number)** [Vector] - returns a predicted skillshot position after input time delta
 * **TimeToHit(Vector)** [number] - returns a time for skillshot to enter a collision with object
