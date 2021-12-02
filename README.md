@@ -6,11 +6,11 @@ Geometry library for evade utility and skillshot simulation.
 
 It has been a long time since people began inventing extensive solutions for problems with pathfinding around dynamic and static obstacles in 2D and 3D environments, yet no one has distributed an optimal way of finding the best path for the game object to get outside of a dangerous area.
 
-This is an interesting subject of artificial intelligence capabilities that I have decided to provide to others in a core format as an easy-to-use library. The solution can be used on any sort of shooting games as well as MMORPG games like League of Legends or Dota, but it can have a purpose in different areas too.
+This is a potential solution for artificial intelligence capabilities that I have decided to provide to others in a core format as an easy-to-use library. The solution can be used on any sort of shooting games as well as MMORPG games like League of Legends or Dota, but it can have a purpose in different areas too.
 
-The skillshot types that are supported are linear, circular, conic, polygonal, and annular. Skillshots are divided into two disparate forms depending on the type of movement. The first one follows a specific path from a fixed starting point to its destination, it contains a circular hitbox and a constant speed. The second form has no position displacement, so the skillshot is placed at a certain location - this form is handled by all skillshot types that have their own defined collision boxes, whereas both forms are supported by linear skillshots only.
+The skillshot types that are supported are linear, circular, conic, polygonal and annular. Skillshots are divided into two disparate forms depending on the type of movement. The first one follows a specific path from a fixed starting point to its destination, it contains a circular hitbox and a constant speed. The second form has no position displacement, so the skillshot points at a certain location. This form applies to all skillshot types that have their own defined collision boxes. For linear skillshots, both of the forms mentioned above are applicable, and the user simply needs to select one.
 
-The following documentation will help you understand how the library is supposed to work on your environment. The introduced API will mostly focus on a skillshot structure and core functions. More details about vectors, polygons and paths can be found inside library file.
+The following documentation will help you understand how the library is supposed to work in your environment. The introduced API will mostly focus on a skillshot structure and core functions. More details about vectors, polygons and paths can be found inside library file.
 
 ## Skillshot API
 

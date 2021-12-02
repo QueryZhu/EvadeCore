@@ -72,7 +72,7 @@
             :Get(number index) - returns a specific point at input index
             :IsInside(Vector) - indicates if input point is inside of a polygon
             :IsOutside(Vector) - indicates if input point is outside of a polygon
-            :Offset(nunber delta, number step) - offsets a polygon by input delta and returns it
+            :Offset(number delta, number step) - offsets a polygon by input delta and returns it
                 + step - defines a length step in arc generation for vertex offsetting
             :Orientation() - returns a boolean based on a polygon's orientation
             :PathIntersection(Vector, Vector) - returns a path-polygon intersection points
