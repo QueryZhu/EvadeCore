@@ -48,8 +48,10 @@ circle to the circumference or perpendicular offset to a line segment
 * **polygon** [Polygon] - a skillshot area constructed from input parameters
     + both polygons are only used by linear and polygonal skillshots
 * **geometry** [Geometry] - an instance of the geometry class providing useful methods
+* **destPos** [Vector] - the raw and unprocessed destination point of a skillshot
 * **direction** [Vector] - a vector defining in which way the skillshot is pointing
 * **endPos** [Vector] - the ending position of a skillshot on a travel path
+    + this is a fixed position whose the ancestor is destPos parameter
 * **perpendicular** [Vector] - a skillshot direction rotated perpendicularly
 * **position** [Vector] - a current skillshot position (manually updated)
 * **startPos** [Vector] - the starting position of a skillshot on a travel path
@@ -80,12 +82,14 @@ Parameters:
 
 Methods:
 
+* **IsCollidingWall(Vector p1, Vector p2)** [boolean] - indicates if a path collides with wall
 * **IsDangerous(Vector)** [boolean] - indicates if input point is inside of any skillshot area
 * **IsDangerousPath(Path)** [boolean] - indicates if input path will collide with any skillshot
 * **IsSafe(Vector)** [boolean] - indicates if input point is outside of all skillshot areas
-* **FindSafeSpots(number speed, number delay, number range, number delta)** [Linq(Vector)]
+* **FindSafeSpots(Path path, number maxRange, boolean wallCheck)** [table(Vector)]
     - returns safe destinations for game object within a limited range (default value is 1000)
-* **GetEvadeSpot(number speed, number delay, number range, number delta)** [Vector]
+    - paths which collide with walls are rejected from results if 'wallCheck' arg is set to true
+* **GetEvadeSpot(Path path, number maxRange, boolean wallCheck)** [Vector]
     - based on generated spots it prioritises the ones which are closer to mouse position
     - in case the paths were too close to reach a collision, it takes the shortest path
 
@@ -118,9 +122,10 @@ end)
 client:set_event_callback("on_tick", function()
     local pos = Vector:New(myHero.origin)
     if core:IsDangerous(pos) then
+        local speed = myHero.move_speed
         local latency = game.ping / 2000
-        safeSpots = core:FindSafeSpots(
-            myHero.move_speed, latency, 600, 0.1)
+        local path = Path:New(speed, latency, 0.1)
+        safeSpots = core:FindSafeSpots(path, 600)
     end
     skillshots:RemoveWhere(function(s) return s:IsExpired() end)
     skillshots:ForEach(function(s) s:Update() end)

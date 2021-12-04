@@ -2,8 +2,8 @@
 --[[
 
     Author: Ark223
-    Version: 1.0.2
-    Date: 2 December 2021
+    Version: 1.0.3
+    Date: 4 December 2021
     Copyright (c) 2021 Arkadiusz Kwiatkowski
 
     [License]
@@ -101,6 +101,7 @@ local directives = {
     timer = function() return game.game_time end,
     hitbox = function() return myHero.bounding_radius end,
     position = function() return myHero.path.server_pos end,
+    isWall = function(p) return nav_mesh:is_wall(p.x, 0, p.y) end,
     drawLine = function(p1, p2, height, a, r, g, b)
         local pa = game:world_to_screen_2(p1.x, height or 0, p1.y)
         local pb = game:world_to_screen_2(p2.x, height or 0, p2.y)
@@ -772,6 +773,7 @@ function Skillshot:__init()
     self.offsetPolygon = Polygon:New()
     self.polygon = Polygon:New()
     self.geometry = Geometry:New()
+    self.destPos = Vector:New()
     self.direction = Vector:New()
     self.endPos = Vector:New()
     self.perpendicular = Vector:New()
@@ -789,9 +791,9 @@ end
 
 function Skillshot:FixOrigin()
     local unfixed = not self.fixedRange
-    local dist = self.startPos:Distance(self.endPos)
+    local dist = self.startPos:Distance(self.destPos)
     if unfixed and dist < self.range then self.range = dist end
-    self.direction = (self.endPos - self.startPos):Normalize()
+    self.direction = (self.destPos - self.startPos):Normalize()
     self.endPos = self.startPos + self.direction * self.range
     self.startPos = self.startPos + self.direction * self.offset
     self.endPos = self.endPos:Rotate(self.rotAngle, self.startPos)
@@ -1231,6 +1233,18 @@ function Core:__init(skillshots, step)
     }
 end
 
+function Core:IsCollidingWall(p1, p2)
+    local dist, step = p1:Distance(p2), 0
+    local hitbox = directives.hitbox()
+    local dir = (p2 - p1):Normalize()
+    for i = 1, math.ceil(dist / hitbox) do
+        local pos = p1 + dir * step
+        if directives.isWall(pos) then return true end
+        step = step + math.min(dist - step, hitbox)
+    end
+    return false
+end
+
 function Core:IsDangerous(pos)
     return self.skillshots:Any(function(s)
         return s:IsDangerous(pos) end)
@@ -1245,14 +1259,13 @@ function Core:IsSafe(pos)
     return not self:IsDangerous(pos)
 end
 
-function Core:FindSafeSpots(speed, delay, range, delta)
+function Core:FindSafeSpots(path, maxRange, wallCheck)
     local results = {}
-    local path = Path:New(speed, delay, delta)
     path.startPos = Vector:New(directives.position())
     for i = 0, 360 - self.angleStep, self.angleStep do
         -- rotate around hero and create a one-way path
         local rotated = Vector:New(0, 1):Rotate(math.rad(i))
-        path.endPos = path.startPos + rotated * (range or 1000)
+        path.endPos = path.startPos + rotated * (maxRange or 1000)
         -- get and analyse the closest safe intersection point
         local intersection = self.skillshots:Select(function(s)
             return s:PathIntersection(path.startPos, path.endPos) end)
@@ -1263,18 +1276,21 @@ function Core:FindSafeSpots(speed, delay, range, delta)
                 return not self:IsDangerous(after) end) or nil
         if intersection == nil then goto continue end
         path.endPos = path.startPos:Append(intersection, 1)
-        if self:IsPathDangerous(path) then goto continue end
+        if self:IsPathDangerous(path) or (wallCheck
+            and self:IsCollidingWall(path.startPos,
+            path.endPos)) then goto continue end
         table.insert(results, path.endPos:Clone())
         ::continue::
     end
     return results
 end
 
-function Core:GetEvadeSpot(speed, delay, range, delta)
-    local delta = delta or 0
+function Core:GetEvadeSpot(path, maxRange, wallCheck)
+    local delta = path.delta
     for index = 1, 0, -1 do
-        local spots = self:FindSafeSpots(speed,
-            delay, range, delta + 0.1 * index)
+        path.delta = delta + 0.1 * index
+        local spots = self:FindSafeSpots(
+            path, maxRange or 1000, wallCheck)
         table.sort(spots, self.SortMode[index])
         if #spots > 0 then return spots[1] end
     end
