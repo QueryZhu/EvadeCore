@@ -97,8 +97,8 @@ Methods:
 
 ```lua
 local lib = require "EvadeCore"
-local Linq, Vector, Line, Core =
-    lib.Linq, lib.Vector, lib.Line, lib.Core
+local Linq, Vector, Line, Core, Path = lib.Linq,
+    lib.Vector, lib.Line, lib.Core, lib.Path
 
 local safeSpots = {}
 local skillshots = Linq() -- initialise collection
