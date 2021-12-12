@@ -2,7 +2,7 @@
 --[[
 
     Author: Ark223
-    Version: 1.0.3
+    Version: 1.0.3b
     Date: 4 December 2021
     Copyright (c) 2021 Arkadiusz Kwiatkowski
 
@@ -1301,6 +1301,7 @@ return {
     Linq = Linq,
     Vector = Vector,
     Polygon = Polygon,
+    Path = Path,
     Circle = Circle,
     Cone = Cone,
     Line = Line,

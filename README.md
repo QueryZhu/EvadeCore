@@ -97,25 +97,26 @@ Methods:
 
 ```lua
 local lib = require "EvadeCore"
-local Linq, Vector, Line, Core, Path = lib.Linq,
-    lib.Vector, lib.Line, lib.Core, lib.Path
+local Linq, Vector, Path, Line, Core = lib.Linq,
+    lib.Vector, lib.Path, lib.Line, lib.Core
 
 local safeSpots = {}
 local skillshots = Linq() -- initialise collection
 local core = Core:New(skillshots) -- inject collection to core
 
 client:set_event_callback("on_wnd_proc", function(msg, wparam)
-    -- 'Z' button press detection
+    -- mouse left-click detection
     if msg ~= 514 or wparam ~= 0 then return end
-    local pos = Vector:New(myHero.origin)
+    local dest = Vector:New(myHero.origin)
+    local start = Vector:New(2700, 1800)
+    local timer = game.game_time
     table.insert(skillshots, Line:New({
-        arcStep = 10, preDelay = 0.25,
-        postDelay = 0, radius = 70,
-        range = 1000, height = 100,
+        arcStep = 10, extraDuration = 0,
+        height = 100, preDelay = 0.25,
+        radius = 70, range = 1000,
         speed = 1800, fixedRange = true,
-        hitbox = true, startTime = os.clock(),
-        endPos = pos, placementPos = pos,
-        startPos = Vector:New(2700, 1800)
+        hitbox = true, startTime = timer,
+        destPos = dest, startPos = start
     }))
 end)
 
